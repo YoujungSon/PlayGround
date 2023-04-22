@@ -8,12 +8,32 @@
 // - [] 블렌디드 메뉴판 관리
 // - [] 티바나 메뉴판 관리
 // - [] 디저트 메뉴판 관리
-// - [] 페이지에 최초로 접근할 때는 에스프레소 메뉴가 먼저 보이게 한다.
+
+// TODO 페이지 젒근시 최초 데이터 Read & Rendering
+// - [] 페이지에 최초로 로딩될때 LocalStorage에 에스프레소 메뉴를 읽어온다.
+// - [] 에스프레소 메뉴를 페이지에 그려준다.
+
+// TODO 품절 상태 관리
 // - [] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 sold-out class를 추가하여 상태를 변경한다.
+// - [] 품절 버튼을 추가한다.
+// - [] 품절 버튼을 클릭하면 lacalStorage에 상태값이 저장된다.
+// - [] 클릭 이벤트에서 가장 가까운 li태그의 class 속성 값에 sold-out을 추가한다.
 
 const $ = (selector) => document.querySelector(selector);
 
+const sotre = {
+  setLocalStorage(menu) {
+    localStorage.setItem('menu', JSON.stringify(menu));
+  },
+  getLocalStorage(menu) {
+    localStorage.getItem('menu');
+  },
+};
+
 function App() {
+  // 상태는 변하는 데이터, 이 앱에서 변하는 것이 무엇인가 - 메뉴명
+  this.menu = [];
+
   const updateMenuCount = () => {
     // li 개수를 카운팅
     const menuCount = $('#espresso-menu-list').querySelectorAll('li').length;
@@ -25,9 +45,12 @@ function App() {
       return;
     }
     const espressoMenuName = $('#espresso-menu-name').value;
-    const menuItemTemplate = (espressoMenuName) => {
-      return `<li class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
+    this.menu.push({ name: espressoMenuName });
+    sotre.setLocalStorage(this.menu);
+    const template = this.menu
+      .map((item) => {
+        return `<li class="menu-list-item d-flex items-center py-2">
+      <span class="w-100 pl-2 menu-name">${item.name}</span>
       <button
         type="button"
         class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -41,9 +64,10 @@ function App() {
         삭제
       </button>
     </li>`;
-    };
-    $('#espresso-menu-list').insertAdjacentHTML('beforeend', menuItemTemplate(espressoMenuName));
-    updateMenuCount();
+      })
+      .join('');
+
+    $('#espresso-menu-list').innerHTML = template;
     $('#espresso-menu-name').value = '';
   };
   const updateMenuName = (e) => {
@@ -78,4 +102,4 @@ function App() {
     addMenuName();
   });
 }
-App();
+const app = new App();
