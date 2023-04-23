@@ -17,10 +17,10 @@
 // - [x] 에스프레소 메뉴를 페이지에 그려준다.
 
 // TODO 품절 상태 관리
-// - [] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 sold-out class를 추가하여 상태를 변경한다.
-// - [] 품절 버튼을 추가한다.
-// - [] 품절 버튼을 클릭하면 lacalStorage에 상태값이 저장된다.
-// - [] 클릭 이벤트에서 가장 가까운 li태그의 class 속성 값에 sold-out을 추가한다.
+// - [x] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 sold-out class를 추가하여 상태를 변경한다.
+// - [x] 품절 버튼을 추가한다.
+// - [x] 품절 버튼을 클릭하면 lacalStorage에 상태값이 저장된다.
+// - [x] 클릭 이벤트에서 가장 가까운 li태그의 class 속성 값에 sold-out을 추가한다.
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -51,9 +51,15 @@ function App() {
   };
   const render = () => {
     const template = this.menu[this.currentCategory]
-      .map((item, index) => {
+      .map((menuItem, index) => {
         return `<li data-menu-id='${index}' class="menu-list-item d-flex items-center py-2">
-    <span class="w-100 pl-2 menu-name">${item.name}</span>
+    <span class="${menuItem.soldOut ? 'sold-out' : ''} w-100 pl-2 menu-name">${menuItem.name}</span>
+    <button
+      type="button"
+      class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+    >
+      품절
+    </button>
     <button
       type="button"
       class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -106,12 +112,24 @@ function App() {
       updateMenuCount();
     }
   };
+  const soldOutMenu = (e) => {
+    const menuId = e.target.closest('li').dataset.menuId;
+    this.menu[this.currentCategory][menuId].soldOut = !this.menu[this.currentCategory][menuId].soldOut;
+    store.setLocalStorage(this.menu);
+    render();
+  };
   $('#menu-list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('menu-sold-out-button')) {
+      soldOutMenu(e);
+      return;
+    }
     if (e.target.classList.contains('menu-edit-button')) {
       updateMenuName(e);
+      return;
     }
     if (e.target.classList.contains('menu-remove-button')) {
       removeMenuName(e);
+      return;
     }
   });
 
