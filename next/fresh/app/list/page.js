@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function List() {
   let 상품 = ['Tomatoes', 'Pasta', 'Cocount'];
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(Array(상품.length).fill(0));
   return (
     <div>
       <h4 className='title'>상품목록</h4>
@@ -15,15 +15,19 @@ export default function List() {
             <h4>{a} $40</h4>
             <button
               onClick={() => {
-                setCount(count - 1);
+                let copy = [...count];
+                copy[i]--;
+                setCount(copy);
               }}
             >
               -
             </button>
-            <span>{count}</span>
+            <span>{count[i]}</span>
             <button
               onClick={() => {
-                setCount(count + 1);
+                let copy = [...count];
+                copy[i]++;
+                setCount(copy);
               }}
             >
               +
